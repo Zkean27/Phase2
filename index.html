@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Victorian Spirit Camera</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="camera-container">
+
+        <video id="camera-view"
+               autoplay
+               playsinline
+               muted></video>
+
+        <canvas id="display-canvas"></canvas>
+
+        <canvas id="capture-canvas"></canvas>
+
+        <!-- NEW GRAIN OVERLAY -->
+        <canvas id="grain-canvas"></canvas>
+
+        <div id="controls-panel">
+
+            <button id="controls-toggle">
+                CONTROLS
+            </button>
+
+            <div id="controls-content">
+
+                <label>
+                    Motion Memory
+                    <input id="memory-slider"
+                           type="range"
+                           min="1"
+                           max="100"
+                           value="50">
+                </label>
+
+                <label>
+                    Ghost Visibility
+                    <input id="visibility-slider"
+                           type="range"
+                           min="1"
+                           max="100"
+                           value="35">
+                </label>
+
+                <label>
+                    Ghost Blur
+                    <input id="blur-slider"
+                           type="range"
+                           min="0"
+                           max="20"
+                           value="6">
+                </label>
+
+                <label>
+                    Contrast
+                    <input id="contrast-slider"
+                           type="range"
+                           min="50"
+                           max="300"
+                           value="120">
+                </label>
+
+                <label>
+                    Brightness
+                    <input id="brightness-slider"
+                           type="range"
+                           min="50"
+                           max="200"
+                           value="100">
+                </label>
+
+                <label>
+                    Film Grain
+                    <input id="grain-slider"
+                           type="range"
+                           min="0"
+                           max="100"
+                           value="20">
+                </label>
+
+            </div>
+
+        </div>
+
+        <div id="zoom-controls">
+            <button id="zoom-in">+</button>
+            <button id="zoom-out">−</button>
+        </div>
+
+        <div id="countdown">10</div>
+
+        <div id="button-bar">
+
+            <button id="capture-btn">
+                CAPTURE
+            </button>
+
+            <button id="reset-btn">
+                RESET
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
