@@ -33,9 +33,9 @@ let countdownValue = 10;
 
 let countdownInterval = null;
 
-let captureInterval = null;
+let snapshotInterval = null;
 
-let previousFrame = null;
+let snapshots = [];
 
 /*
 ====================
@@ -97,11 +97,11 @@ async function startCamera() {
 
 /*
 ====================
-MOTION ACCUMULATION
+SNAPSHOT
 ====================
 */
 
-function accumulateMotion() {
+function takeSnapshot() {
 
     if (
         video.videoWidth === 0 ||
@@ -116,12 +116,6 @@ function accumulateMotion() {
     captureCanvas.height =
         video.videoHeight;
 
-    displayCanvas.width =
-        video.videoWidth;
-
-    displayCanvas.height =
-        video.videoHeight;
-
     captureCtx.drawImage(
         video,
         0,
@@ -130,95 +124,114 @@ function accumulateMotion() {
         captureCanvas.height
     );
 
-    const currentFrame =
-        captureCtx.getImageData(
-            0,
-            0,
-            captureCanvas.width,
-            captureCanvas.height
-        );
-
-    if (!previousFrame) {
-
-        previousFrame = currentFrame;
-        return;
-
-    }
-
-    const current =
-        currentFrame.data;
-
-    const previous =
-        previousFrame.data;
-
-    const motionFrame =
-        displayCtx.createImageData(
-            currentFrame
-        );
-
-    const motion =
-        motionFrame.data;
-
-    for (
-        let i = 0;
-        i < current.length;
-        i += 4
-    ) {
-
-        const difference =
-            Math.abs(current[i] - previous[i]) +
-            Math.abs(current[i + 1] - previous[i + 1]) +
-            Math.abs(current[i + 2] - previous[i + 2]);
-
-        if (difference > 40) {
-
-            motion[i] = current[i];
-            motion[i + 1] = current[i + 1];
-            motion[i + 2] = current[i + 2];
-            motion[i + 3] = 255;
-
-        }
-
-    }
-
-    /*
-    Accumulate onto display canvas
-    */
-
-    displayCtx.putImageData(
-        motionFrame,
-        0,
-        0
+    snapshots.push(
+        captureCanvas.toDataURL("image/jpeg")
     );
-
-    previousFrame = currentFrame;
 
 }
 
 /*
 ====================
-SHOW RESULT
+GHOST COMPOSITE
 ====================
 */
 
-function showResult() {
+function showGhostComposite() {
 
-    /*
-    Draw final body position
-    */
+    if (snapshots.length === 0) return;
 
-    displayCtx.globalAlpha = 1;
+    displayCanvas.width =
+        video.videoWidth;
 
-    displayCtx.drawImage(
-        video,
+    displayCanvas.height =
+        video.videoHeight;
+
+    displayCtx.clearRect(
         0,
         0,
         displayCanvas.width,
         displayCanvas.height
     );
 
-    video.style.display =
-        "none";
+    let loadedImages = 0;
+
+    const images = [];
+
+    snapshots.forEach((src, index) => {
+
+        const img = new Image();
+
+        img.onload = () => {
+
+            images[index] = img;
+
+            loadedImages++;
+
+            if (loadedImages === snapshots.length) {
+
+                renderGhosts(images);
+
+            }
+
+        };
+
+        img.src = src;
+
+    });
+
+}
+
+/*
+====================
+RENDER POSITIONS
+====================
+*/
+
+function renderGhosts(images) {
+
+    displayCtx.clearRect(
+        0,
+        0,
+        displayCanvas.width,
+        displayCanvas.height
+    );
+
+    const total = images.length;
+
+    images.forEach((img, index) => {
+
+        /*
+        Earlier positions still visible
+        */
+
+        let opacity = 0.45;
+
+        /*
+        Final body stronger
+        */
+
+        if (index === total - 1) {
+
+            opacity = 1;
+
+        }
+
+        displayCtx.globalAlpha =
+            opacity;
+
+        displayCtx.drawImage(
+            img,
+            0,
+            0,
+            displayCanvas.width,
+            displayCanvas.height
+        );
+
+    });
+
+    displayCtx.globalAlpha = 1;
+
+    video.style.display = "none";
 
     displayCanvas.style.display =
         "block";
@@ -235,14 +248,7 @@ captureBtn.addEventListener("click", () => {
 
     if (countdownInterval) return;
 
-    previousFrame = null;
-
-    displayCtx.clearRect(
-        0,
-        0,
-        displayCanvas.width,
-        displayCanvas.height
-    );
+    snapshots = [];
 
     countdownValue = 10;
 
@@ -251,41 +257,45 @@ captureBtn.addEventListener("click", () => {
 
     captureBtn.disabled = true;
 
-    captureInterval =
-        setInterval(
-            accumulateMotion,
-            100
-        );
+    /*
+    1 snapshot per second
+    */
 
-    countdownInterval =
-        setInterval(() => {
+    snapshotInterval = setInterval(
+        takeSnapshot,
+        1000
+    );
 
-            countdownValue--;
+    takeSnapshot();
 
-            countdownDisplay.textContent =
-                countdownValue;
+    countdownInterval = setInterval(() => {
 
-            if (countdownValue <= 0) {
+        countdownValue--;
 
-                clearInterval(
-                    countdownInterval
-                );
+        countdownDisplay.textContent =
+            countdownValue;
 
-                clearInterval(
-                    captureInterval
-                );
+        if (countdownValue <= 0) {
 
-                countdownInterval = null;
-                captureInterval = null;
+            clearInterval(
+                countdownInterval
+            );
 
-                showResult();
+            clearInterval(
+                snapshotInterval
+            );
 
-                captureBtn.disabled =
-                    false;
+            countdownInterval = null;
+            snapshotInterval = null;
 
-            }
+            showGhostComposite();
 
-        }, 1000);
+            captureBtn.disabled =
+                false;
+
+        }
+
+    }, 1000);
 
 });
 
@@ -302,13 +312,14 @@ resetBtn.addEventListener("click", () => {
     );
 
     clearInterval(
-        captureInterval
+        snapshotInterval
     );
 
     countdownInterval = null;
-    captureInterval = null;
 
-    previousFrame = null;
+    snapshotInterval = null;
+
+    snapshots = [];
 
     countdownValue = 10;
 
