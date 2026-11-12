@@ -7,7 +7,7 @@
 
     <title>Victorian Spirit Camera</title>
 
-    <link rel="stylesheet" href="StyleSheet1.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -20,71 +20,47 @@
                playsinline
                muted></video>
 
-        <!-- Controls Panel -->
+        <!-- Controls -->
+
         <div id="controls-panel">
 
-            <details>
-                <summary>Controls</summary>
+            <button id="controls-toggle">
+                CONTROLS
+            </button>
 
-                <div id="controls-content">
+            <div id="controls-content">
 
-                    <label>
-                        Motion Memory
-                        <input type="range"
-                               min="1"
-                               max="100"
-                               value="50"
-                               id="memory-slider">
-                    </label>
+                <label>
+                    Motion Memory
+                    <input type="range" min="1" max="100" value="50">
+                </label>
 
-                    <label>
-                        Ghost Visibility
-                        <input type="range"
-                               min="1"
-                               max="100"
-                               value="50"
-                               id="visibility-slider">
-                    </label>
+                <label>
+                    Ghost Visibility
+                    <input type="range" min="1" max="100" value="50">
+                </label>
 
-                    <label>
-                        Ghost Blur
-                        <input type="range"
-                               min="0"
-                               max="50"
-                               value="10"
-                               id="blur-slider">
-                    </label>
+                <label>
+                    Ghost Blur
+                    <input type="range" min="0" max="50" value="10">
+                </label>
 
-                    <label>
-                        Contrast
-                        <input type="range"
-                               min="0"
-                               max="200"
-                               value="100"
-                               id="contrast-slider">
-                    </label>
+                <label>
+                    Contrast
+                    <input type="range" min="0" max="200" value="100">
+                </label>
 
-                    <label>
-                        Brightness
-                        <input type="range"
-                               min="0"
-                               max="200"
-                               value="100"
-                               id="brightness-slider">
-                    </label>
+                <label>
+                    Brightness
+                    <input type="range" min="0" max="200" value="100">
+                </label>
 
-                    <label>
-                        Film Grain
-                        <input type="range"
-                               min="0"
-                               max="100"
-                               value="20"
-                               id="grain-slider">
-                    </label>
+                <label>
+                    Film Grain
+                    <input type="range" min="0" max="100" value="20">
+                </label>
 
-                </div>
-
-            </details>
+            </div>
 
         </div>
 
@@ -117,7 +93,7 @@
 
     </div>
 
-    <script src="Script1.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
